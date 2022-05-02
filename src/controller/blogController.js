@@ -35,31 +35,31 @@ const createBlog = async function (req, res) {
         let { title, body, authorId, category } = data;
 
         if (!title) {
-            return res.status(400).send({ msg: "Title is required...!" });
+            return res.status(400).send({status: false, msg: "Title is required...!" });
         }
         if (!stringChecking(title)) {
-            return res.status(400).send({ msg: "Please enter the title in right format...!" });
+            return res.status(400).send({status: false, msg: "Please enter the title in right format...!" });
         }
 
         if (!body) {
-            return res.status(400).send({ msg: "Body is required...!" });
+            return res.status(400).send({status: false, msg: "Body is required...!" });
         }
         if (!stringChecking(body)) {
-            return res.status(400).send({ msg: "Please enter the body in right format...!" });
+            return res.status(400).send({status: false, msg: "Please enter the body in right format...!" });
         }
 
         if (!category) {
-            return res.status(400).send({ msg: "Category is required...!" });
+            return res.status(400).send({status: false, msg: "Category is required...!" });
         }
         if (!stringChecking(category)) {
-            return res.status(400).send({ msg: "Please enter the category in right format...!" });
+            return res.status(400).send({status: false, msg: "Please enter the category in right format...!" });
         }
 
         if (!authorId) {
-            return res.status(400).send({ msg: "AuthorId is required...!" });
+            return res.status(400).send({status: false, msg: "AuthorId is required...!" });
         }
         if (!await authorModel.findById(authId)) {
-            res.status(401).send({ Msg: "AuthorId is not valid...!" });
+            res.status(401).send({status: false, Msg: "AuthorId is not valid...!" });
         } else if (await authorModel.findById(authId)) {
             let createData = await blogModel.create(data);
             res.status(201).send({ status: true, data: createData });
@@ -68,7 +68,7 @@ const createBlog = async function (req, res) {
         }
     }
     catch (err) {
-        res.status(500).send({ msg: "Error", error: err.message });
+        res.status(500).send({ status: false, msg: "Error", error: err.message });
     }
 }
 
@@ -96,25 +96,25 @@ const getBlogs = async function (req, res) {
 
         if (category != undefined) {
             if (!stringChecking(category))
-                return res.status(400).send({ msg: "Please enter the category in right format...!" })
+                return res.status(400).send({status: false, msg: "Please enter the category in right format...!" })
             filter.category = category
         }
 
         if (tags != undefined) {
             if (!stringChecking(tags))
-                return res.status(400).send({ msg: "Please enter the tag in right format...!" });
+                return res.status(400).send({status: false, msg: "Please enter the tag in right format...!" });
             filter.tags = tags
         }
 
         if (subcategory != undefined) {
             if (!stringChecking(subcategory))
-                return res.status(400).send({ msg: "Please enter the subcategory in right format...!" });
+                return res.status(400).send({status: false, msg: "Please enter the subcategory in right format...!" });
             filter.subcategory = subcategory
         }
 
         if (authorId != undefined) {
             if (!stringChecking(authorId))
-                return res.status(400).send({ msg: "Please enter the authorId in right format...!" });
+                return res.status(400).send({status: false, msg: "Please enter the authorId in right format...!" });
             filter.authorId = authorId
         }
 
@@ -128,10 +128,10 @@ const getBlogs = async function (req, res) {
         if (filterData.length == 0) {
             return res.status(404).send({ status: false, msg: "Documents not found.." });
         }
-        res.status(200).send({ Data: filterData });
+        res.status(200).send({status: true, Data: filterData });
     }
     catch (err) {
-        res.status(500).send({ msg: "Error", error: err.message });
+        res.status(500).send({status: false, msg: "Error", error: err.message });
     }
 }
 
@@ -156,28 +156,28 @@ const updateblog = async function (req, res) {
 
         if (title != undefined) {
             if (!stringChecking(title))
-                return res.status(400).send({ msg: "Please enter the title in right format...!" });
+                return res.status(400).send({status: false, msg: "Please enter the title in right format...!" });
         }
 
         if (body != undefined) {
             if (!stringChecking(body))
-                return res.status(400).send({ msg: "Please enter the body in right format...!" });
+                return res.status(400).send({status: false, msg: "Please enter the body in right format...!" });
         }
 
         if (tags != undefined) {
             if (!stringChecking(tags))
-                return res.status(400).send({ msg: "Please enter the tag in right format...!" });
+                return res.status(400).send({status: false, msg: "Please enter the tag in right format...!" });
         }
 
         if (subcategory != undefined) {
             if (!stringChecking(subcategory))
-                return res.status(400).send({ msg: "Please enter the subcategory in right format...!" });
+                return res.status(400).send({status: false, msg: "Please enter the subcategory in right format...!" });
         }
 
         let blog = await blogModel.findById(blogId);
 
         if (!blog) {
-            return res.status(404).send("No such blog exists");
+            return res.status(404).send({status: false, msg:"No such blog exists"});
         }
 
         if (blog.isDeleted == true) {
@@ -186,10 +186,10 @@ const updateblog = async function (req, res) {
 
         let updatedblog = await blogModel.findByIdAndUpdate({ _id: blogId }, { $addToSet: { tags: tags, subcategory: subcategory }, $set: { title: title, body: body, publishedAt: Date.now() } }, { new: true });
 
-        res.status(201).send({ msg: "done", data: updatedblog });
+        res.status(201).send({status: true, msg: "done", data: updatedblog });
     }
     catch (err) {
-        res.status(500).send({ msg: "Error", error: err.message })
+        res.status(500).send({status: false, msg: "Error", error: err.message })
     }
 }
 
@@ -207,7 +207,7 @@ const deleteblog = async function (req, res) {
         let blog = await blogModel.findById(blogId);
 
         if (!blog) {
-            return res.status(404).send("No such blog exists");
+            return res.status(404).send({status: false,msg:"No such blog exists"});
         }
 
         if (blog.isDeleted == true) {
@@ -221,10 +221,10 @@ const deleteblog = async function (req, res) {
         }
 
         let deletedtedUser = await blogModel.findOneAndUpdate({ _id: blogId }, { $set: { isDeleted: true ,deletedAt: Date.now()} }, { new: true });
-        res.status(200).send({ msg: "done", data: deletedtedUser });
+        res.status(200).send({status: true, msg: "done", data: deletedtedUser });
     }
     catch (err) {
-        res.status(500).send({ msg: "Error", error: err.message })
+        res.status(500).send({status: false, msg: "Error", error: err.message })
     }
 }
 
@@ -249,10 +249,10 @@ const deleteblog2 = async function (req, res) {
 
         let deletedtedUser = await blogModel.updateMany(query1, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true });
 
-        res.status(200).send({ msg: "done", data: deletedtedUser });
+        res.status(200).send({status: true, msg: "done", data: deletedtedUser });
     }
     catch (err) {
-        res.status(500).send({ msg: "Error", error: err.message })
+        res.status(500).send({status: false, msg: "Error", error: err.message })
     }
 }
 
